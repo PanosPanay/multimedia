@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}             {# 默认的块重写行为是覆盖，如果想要向父块追加内容，可以在子块中使用 super() 声明，即 {{ super() }} #}
+<h2>基本信息</h2>
+<table class="info_table">
+    <tr>
+        <th>姓名</th>
+        <td>王宝江</td>
+    </tr>
+    <tr class="alt">
+        <th>学号</th>
+        <td>2016211274</td>
+    </tr>
+    <tr>
+        <th>班级</th>
+        <td>2016211306</td>
+    </tr>
+    <tr class="alt">
+        <th>学院</th>
+        <td>计算机学院</td>
+    </tr>
+    <tr>
+        <th>专业</th>
+        <td>计算机科学与技术</td>
+    </tr>
+    <tr class="alt">
+        <th>课程</th>
+        <td>数字媒体内容综合设计与实验</td>
+    </tr>
+    <tr>
+        <th>教师</th>
+        <td>傅慧源</td>
+    </tr>
+</table>
+<h2>实验概览</h2>
+<ul class="experiment-list">
+    {% for experiment in experiments %}
+    <li>{{ experiment.name }}
+        <span class="float-right">
+            <a class="btn" href="{{ url_for('experiment', id=experiment.id) }}">详情页</a>
+        </span> 
+    </li>
+    {% endfor %}
+</ul>
+<img alt="Dancing hanpijieni" class="hanpi" src="{{ url_for('static', filename='images/hanpi.gif') }}">
+{% endblock %}

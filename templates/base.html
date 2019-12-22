@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数字媒体内容综合设计与实现</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">
+    {% endblock %}
+</head>
+<body>
+    <!-- 使用get_flashed_messages()函数获取提示消息并显示 -->
+    <!-- {% for message in get_flashed_messages() %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %} -->
+    
+    <!-- 页面标题 -->
+    <h2>
+        <img alt="Avatar" class="avatar" src="{{ url_for('static', filename='images/avatar.png') }}">
+        数字媒体内容综合设计与实现
+    </h2>
+    
+    <!-- 导航栏 -->
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">概览</a></li>
+            <li><a href="{{ url_for('experiment', id=1) }}">实验一</a></li>
+            <li><a href="{{ url_for('experiment', id=2) }}">实验二</a></li>
+            <li><a href="{{ url_for('experiment', id=3) }}">实验三</a></li>
+            <li><a href="{{ url_for('experiment', id=4) }}">实验四</a></li>
+        </ul>
+    </nav>
+
+    <!-- 正文 -->
+    {% block content %}{% endblock %}
+
+    <!-- 页脚 -->
+    <footer>
+        <small>&copy; 2019 <a href="https://panospanay.github.io/">良多</a></small>
+    </footer>
+</body>
+</html>
