@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
 
 {% block content %}
 <h2>{{ experiment.name }}</h2>
 <p><b>要求：</b>{{ experiment.request }}</p>
 <p><b>提交内容：</b>{{ experiment.content }}</p>
-
+<form method="post" enctype="multipart/form-data">
+    {{ upload_form.csrf_token }}
+    {{ form_field(upload_form.file) }}
+    {{ upload_form.submit }}
+</form>
 {% endblock %}

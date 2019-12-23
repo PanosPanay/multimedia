@@ -1,6 +1,18 @@
-from  flask import Flask, url_for, render_template
+import os
+from flask import Flask, url_for, render_template, redirect, session, flash, request
+from forms import UploadForm
+from werkzeug import secure_filename
 
 app = Flask(__name__)
+
+# 为程序设置密钥
+app.secret_key = os.getenv('SECRET_KEY', 'secret string')
+
+# 上传文件存储路径
+app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
+
+# 请求数据（上传文件大小）最大限制为1G，超过此限制返回413错误响应
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  
 
 class Experiment:
     """实验"""
@@ -46,6 +58,25 @@ experiments = init_info()   # 四次实验的信息
 def index():
     return render_template('index.html', experiments=experiments)
 
-@app.route('/experiment/<int:id>')
+@app.route('/experiment/<int:id>', methods=['GET', 'POST'])
 def experiment(id):
-    return render_template('experiment.html', experiment=experiments[id-1])
+    upload_form = UploadForm()
+    if upload_form.validate_on_submit():
+        f = upload_form.file.data                   # 上传的文件
+
+        # 修改了secure_filename源码以支持中文，否则secure_filename()会过滤掉中文，只剩下扩展名
+        # 参考：https://blog.csdn.net/qq_30490489/article/details/92000197
+        filename = secure_filename(f.filename)      # 文件名
+
+        # 存储到上传路径
+        experiment_name = 'experiment' + str(id)    # 本实验名, eg.'experiment1'
+        experiment_path = os.path.join(app.config['UPLOAD_PATH'], experiment_name)  # 本实验上传路径
+        f.save(os.path.join(experiment_path, filename)) # 存储上传文件
+
+        flash('Upload success.')
+
+        session['filename'] = [filename]
+
+        return redirect(url_for('experiment', id=id))
+
+    return render_template('experiment.html', experiment=experiments[id-1], upload_form=upload_form)
