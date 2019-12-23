@@ -14,6 +14,8 @@ app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 # 请求数据（上传文件大小）最大限制为1G，超过此限制返回413错误响应
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  
 
+IGNORED_FILES = set(['.gitignore'])
+
 class Experiment:
     """实验"""
     def __init__(self, id, name, request, content):
@@ -62,15 +64,26 @@ def index():
 def experiment(id):
     upload_form = UploadForm()
     if upload_form.validate_on_submit():
+        """上传并保存文件"""
         f = upload_form.file.data                   # 上传的文件
 
         # 修改了secure_filename源码以支持中文，否则secure_filename()会过滤掉中文，只剩下扩展名
         # 参考：https://blog.csdn.net/qq_30490489/article/details/92000197
         filename = secure_filename(f.filename)      # 文件名
 
-        # 存储到上传路径
+        # 获取本实验上传路径
         experiment_name = 'experiment' + str(id)    # 本实验名, eg.'experiment1'
         experiment_path = os.path.join(app.config['UPLOAD_PATH'], experiment_name)  # 本实验上传路径
+
+        # 若上传路径下已存在该名称的文件，则重命名准备上传的文件
+        name, extension = os.path.splitext(filename)
+        i = 1
+        while os.path.exists(os.path.join(experiment_path, filename)):
+            # name, extension = os.path.splitext(filename)
+            filename = '%s_%s%s' % (name, str(i), extension)
+            i += 1
+        
+        # 存储到上传路径
         f.save(os.path.join(experiment_path, filename)) # 存储上传文件
 
         flash('Upload success.')
@@ -78,5 +91,23 @@ def experiment(id):
         session['filename'] = [filename]
 
         return redirect(url_for('experiment', id=id))
+    
+    if request.method == 'GET':
+        """获取并显示本实验路径下的所有文件"""
+        # 获取本实验上传路径
+        experiment_name = 'experiment' + str(id)    # 本实验名, eg.'experiment1'
+        experiment_path = os.path.join(app.config['UPLOAD_PATH'], experiment_name) 
 
-    return render_template('experiment.html', experiment=experiments[id-1], upload_form=upload_form)
+        # 获取文件列表
+        files = [f for f in os.listdir(experiment_path) if os.path.isfile(os.path.join(experiment_path, f)) and f not in IGNORED_FILES]
+
+    return render_template('experiment.html', experiment=experiments[id-1], upload_form=upload_form, files=files, experiment_path=experiment_path)
+
+@app.route('/file/delete/<id>/<path:experiment_path>/<string:filename>')
+def delete(id, experiment_path, filename):
+    """删除"""
+    os.remove(os.path.join(experiment_path, filename))
+
+    flash('Delete success.')
+
+    return redirect(url_for('experiment', id=id))

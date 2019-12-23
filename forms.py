@@ -5,5 +5,5 @@ from wtforms import SubmitField
 class UploadForm(FlaskForm):
     """上传表单"""
     file = FileField('上传文件', validators=[FileRequired(), 
-        FileAllowed(['docx', 'pdf', 'wav', 'aac', 'jpg', 'png', 'psb', 'psd', 'bmp', 'py', 'fla', 'swf', 'txt', 'md', 'zip', 'rar', '7z'])])
+        FileAllowed(['docx', 'doc', 'pdf', 'wav', 'aac', 'jpg', 'jpeg', 'png', 'psb', 'psd', 'bmp', 'gif', 'py', 'fla', 'swf', 'txt', 'md', 'zip', 'rar', '7z', '7zip'])])
     submit = SubmitField()

@@ -10,4 +10,16 @@
     {{ form_field(upload_form.file) }}
     {{ upload_form.submit }}
 </form>
+<p><b>已上传文件(/uploads/experiment{{ experiment.id }})：</b></p>
+<ul class="experiment-list">
+    {% for file in files %}
+    <li>{{ file }}
+        <span class="float-right">
+            <form class="inline-form" method="post" action="{{ url_for('delete', id=experiment.id, experiment_path=experiment_path, filename=file) }}">
+                <input class="btn" type="submit" name="delete" value="删除" onclick="return confirm('确认删除该文件？')">
+            </form>
+        </span> 
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}
