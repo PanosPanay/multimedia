@@ -73,7 +73,7 @@ def experiment(id):
         # 参考：https://blog.csdn.net/qq_30490489/article/details/92000197
         filename = secure_filename(f.filename)      # 文件名
 
-        # 获取本实验上传路径
+        # 获取本实验上传路径(在本地先建立好uploads/experiment1等4个实验的上传文件夹)
         experiment_name = 'experiment' + str(id)    # 本实验名, eg.'experiment1'
         experiment_path = os.path.join(app.config['UPLOAD_PATH'], experiment_name)  # 本实验上传路径
 

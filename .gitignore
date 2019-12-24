@@ -3,3 +3,7 @@
 __pycache__
 .DS_Store
 .env
+upload/experiment1/*
+upload/experiment2/*
+upload/experiment3/*
+upload/experiment4/*
