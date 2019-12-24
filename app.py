@@ -1,5 +1,5 @@
 import os
-from flask import Flask, url_for, render_template, redirect, session, flash, request
+from flask import Flask, url_for, render_template, redirect, session, flash, request, send_from_directory, make_response
 from forms import UploadForm
 from werkzeug import secure_filename
 
@@ -58,10 +58,12 @@ experiments = init_info()   # 四次实验的信息
 @app.route('/index')
 @app.route('/home')
 def index():
+    """主页"""
     return render_template('index.html', experiments=experiments)
 
 @app.route('/experiment/<int:id>', methods=['GET', 'POST'])
 def experiment(id):
+    """实验页面，包含对文件上传的处理"""
     upload_form = UploadForm()
     if upload_form.validate_on_submit():
         """上传并保存文件"""
@@ -101,13 +103,26 @@ def experiment(id):
         # 获取文件列表
         files = [f for f in os.listdir(experiment_path) if os.path.isfile(os.path.join(experiment_path, f)) and f not in IGNORED_FILES]
 
-    return render_template('experiment.html', experiment=experiments[id-1], upload_form=upload_form, files=files, experiment_path=experiment_path)
+    return render_template('experiment.html', experiment=experiments[id-1], upload_form=upload_form, files=files)
 
-@app.route('/file/delete/<id>/<path:experiment_path>/<string:filename>')
-def delete(id, experiment_path, filename):
-    """删除"""
+@app.route('/file/delete/<int:id>/<string:filename>', methods=['POST'])
+def delete(id, filename):
+    """删除文件"""
+    experiment_name = 'experiment' + str(id)    # 本实验名, eg.'experiment1'
+    experiment_path = os.path.join(app.config['UPLOAD_PATH'], experiment_name) 
+
     os.remove(os.path.join(experiment_path, filename))
 
     flash('Delete success.')
 
     return redirect(url_for('experiment', id=id))
+
+@app.route('/file/download/<int:id>/<string:filename>')
+def download(id, filename):
+    """下载文件"""
+    experiment_name = 'experiment' + str(id)    # 本实验名, eg.'experiment1'
+    experiment_path = os.path.join(app.config['UPLOAD_PATH'], experiment_name) 
+
+    response = make_response(send_from_directory(experiment_path, filename, as_attachment=True))
+    
+    return response

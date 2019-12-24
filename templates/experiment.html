@@ -15,8 +15,11 @@
     {% for file in files %}
     <li>{{ file }}
         <span class="float-right">
-            <form class="inline-form" method="post" action="{{ url_for('delete', id=experiment.id, experiment_path=experiment_path, filename=file) }}">
+            <form class="inline-form" method="post" action="{{ url_for('delete', id=experiment.id, filename=file) }}">
                 <input class="btn" type="submit" name="delete" value="删除" onclick="return confirm('确认删除该文件？')">
+            </form>
+            <form class="inline-form" method="get" action="{{ url_for('download', id=experiment.id, filename=file) }}">
+                <input class="btn" type="submit" name="download" value="下载">
             </form>
         </span> 
     </li>

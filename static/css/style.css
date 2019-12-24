@@ -161,3 +161,9 @@ nav li a:hover
     border-color: #b8daff;
     border-radius: 5px;
 }
+
+/* 表单元素，让删除按钮和下载按钮排成一排 */
+.inline-form
+{
+    display: inline;
+}
